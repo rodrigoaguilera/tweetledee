@@ -49,6 +49,7 @@ require 'tldlib/tldCache.php';
 $count = 25;  //default tweet number = 25
 $exclude_replies = false;  //default to include replies
 $cache_interval = 90; // default cache interval = 90 seconds
+$tweet_mode = 'extended'; // For truncated tweets set 'compat'.
 
 /*******************************************************************
 *   Parameters
@@ -130,13 +131,14 @@ $screen_name = $data['screen_name'];
 *  Request
 ********************************************************************/
 $homeTimelineObj = $tldCache->user_request(array(
-			'url' => '1.1/statuses/home_timeline',
-			'params' => array(
-          		'include_entities' => true,
-    			'count' => $count,
-    			'exclude_replies' => $exclude_replies,
-        	)
-        ));
+  'url' => '1.1/statuses/home_timeline',
+  'params' => array(
+    'include_entities' => true,
+    'count' => $count,
+    'exclude_replies' => $exclude_replies,
+    'tweet_mode' => $tweet_mode,
+  )
+));
 
 //headers
 header("Content-Type: application/rss+xml");
@@ -175,13 +177,13 @@ header("Content-type: text/xml; charset=utf-8");
                     $rt = '&nbsp;&nbsp;&nbsp;&nbsp;[<em style="font-size:smaller;">Retweeted by ' . $currentitem['user']['name'] . ' <a href=\'http://twitter.com/' . $currentitem['user']['screen_name'] . '\'>@' . $currentitem['user']['screen_name'] . '</a></em>]';
                     $tweeter =  $currentitem['retweeted_status']['user']['screen_name'];
                     $fullname = $currentitem['retweeted_status']['user']['name'];
-                    $tweetTitle = $currentitem['retweeted_status']['text'];
+                    $tweetTitle = isset($currentitem['retweeted_status']['text']) ? $currentitem['retweeted_status']['text'] : $currentitem['retweeted_status']['full_text'];
                 else :
                     $avatar = $currentitem['user']['profile_image_url'];
                     $rt = '';
                     $tweeter = $currentitem['user']['screen_name'];
                     $fullname = $currentitem['user']['name'];
-                    $tweetTitle = $currentitem['text'];
+                    $tweetTitle = isset($currentitem['text']) ? $currentitem['text'] : $currentitem['full_text'];
                endif;
                 ?>
 				<title>[<?php echo $tweeter; ?>] <?php echo $tweetTitle; ?> </title>

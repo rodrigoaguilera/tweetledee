@@ -54,7 +54,7 @@ class tmhUtilities {
     }
 
     if (!isset($tweet['entities'])) {
-      return $tweet['text'];
+      return isset($tweet['text']) ? $tweet['text'] : $tweet['full_text'];
     }
 
     $target = (!empty($opts['target'])) ? ' target="'.$opts['target'].'"' : '';
@@ -81,7 +81,7 @@ class tmhUtilities {
             break;
         }
         $keys[$value['indices']['0']] = mb_substr(
-          $tweet['text'],
+          isset($tweet['text']) ? $tweet['text'] : $tweet['full_text'],
           $value['indices']['0'],
           $value['indices']['1'] - $value['indices']['0']
         );
@@ -91,7 +91,7 @@ class tmhUtilities {
 
     ksort($replacements);
     $replacements = array_reverse($replacements, true);
-    $entified_tweet = $tweet['text'];
+    $entified_tweet = isset($tweet['text']) ? $tweet['text'] : $tweet['full_text'];
     foreach ($replacements as $k => $v) {
       $entified_tweet = mb_substr($entified_tweet, 0, $k).$v.mb_substr($entified_tweet, $k + strlen($keys[$k]));
     }
